@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../contexts/AuthContext'; // Adjust the path as needed
 
 const SignUp = () => {
   const [fname, setFname] = useState("");
@@ -6,17 +7,45 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const { setIsAuthenticated, setIsModalOpen } = useContext(AuthContext);
 
   const passwordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
-    setFname("");
-    setLname("");
-    setEmail("");
-    setPassword("");
+
+    const payload = { firstName: fname, lastName: lname, email, password };
+    
+    try {
+      const response = await fetch('https://your-api-url/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Assuming the response contains a token or user info
+        // Store the token/user info as needed
+
+        setIsAuthenticated(true);
+        setIsModalOpen(true);
+        
+        setFname("");
+        setLname("");
+        setEmail("");
+        setPassword("");
+      } else {
+        // Handle errors
+        console.error('Sign-up failed');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   return (
@@ -120,6 +149,6 @@ const SignUp = () => {
       </form>
     </div>
   );
-}
+};
 
 export default SignUp;

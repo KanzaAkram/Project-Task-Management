@@ -1,16 +1,13 @@
-import React, { Fragment, memo, useEffect, useState } from "react";
+import React, { Fragment, memo, useContext, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import BtnPrimary from "./BtnPrimary";
 import BtnSecondary from "./BtnSecondary";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { AuthContext } from "../contexts/AuthContext";
 
-const AddProjectModal = ({
-  isModalOpen,
-  closeModal,
-  edit = false,
-  id = null,
-}) => {
+const AddProjectModal = ({ edit = false, id = null }) => {
+  const { isModalOpen, setIsModalOpen } = useContext(AuthContext);
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
 
@@ -28,6 +25,12 @@ const AddProjectModal = ({
     }
   }, [isModalOpen]);
 
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setTitle("");
+    setDesc("");
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!edit) {
@@ -40,11 +43,9 @@ const AddProjectModal = ({
           });
           document.dispatchEvent(customEvent);
           toast.success("Project created successfully");
-          setTitle("");
-          setDesc("");
         })
         .catch((error) => {
-          if (error.response.status === 422) {
+          if (error.response && error.response.status === 422) {
             toast.error(error.response.data.details[0].message);
           } else {
             toast.error("Something went wrong");
@@ -63,11 +64,9 @@ const AddProjectModal = ({
           });
           document.dispatchEvent(customEvent);
           toast.success("Project updated successfully");
-          setTitle("");
-          setDesc("");
         })
         .catch((error) => {
-          if (error.response.status === 422) {
+          if (error.response && error.response.status === 422) {
             toast.error(error.response.data.details[0].message);
           } else {
             toast.error("Something went wrong");
@@ -81,7 +80,7 @@ const AddProjectModal = ({
       <Dialog
         as="div"
         open={isModalOpen}
-        onClose={() => closeModal()}
+        onClose={closeModal}
         className="relative z-50"
       >
         <div className="fixed inset-0 overflow-y-auto">
@@ -97,7 +96,6 @@ const AddProjectModal = ({
             <div className="fixed inset-0 bg-black/30" />
           </Transition.Child>
           <div className="fixed inset-0 flex items-center justify-center p-4 w-screen h-screen ">
-            {/* <div className="fixed inset-0 "> */}
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300 "
@@ -116,7 +114,7 @@ const AddProjectModal = ({
                 >
                   {edit ? <h1>Edit Project</h1> : <h1>Create Project</h1>}
                   <button
-                    onClick={() => closeModal()}
+                    onClick={closeModal}
                     className=" absolute right-6 top-4 text-gray-500 hover:bg-gray-100 rounded focus:outline-none focus:ring focus:ring-offset-1 focus:ring-indigo-200 "
                   >
                     <svg
@@ -162,7 +160,7 @@ const AddProjectModal = ({
                     ></textarea>
                   </div>
                   <div className="flex justify-end items-center space-x-2">
-                    <BtnSecondary onClick={() => closeModal()}>
+                    <BtnSecondary onClick={closeModal}>
                       Cancel
                     </BtnSecondary>
                     <BtnPrimary>Save</BtnPrimary>
@@ -178,3 +176,4 @@ const AddProjectModal = ({
 };
 
 export default memo(AddProjectModal);
+

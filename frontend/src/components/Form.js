@@ -1,14 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../contexts/AuthContext'; // Adjust the path as needed
 
 const Form = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const { setIsAuthenticated, setIsModalOpen } = useContext(AuthContext);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setUsername('');
-    setPassword('');
+
+    const payload = { email: username, password };
+
+    try {
+      const response = await fetch('https://your-api-url/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Assuming the response contains a token or user info
+        // Store the token/user info as needed
+
+        setIsAuthenticated(true);
+        setIsModalOpen(true);
+
+        setUsername('');
+        setPassword('');
+      } else {
+        // Handle errors
+        console.error('Login failed');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -20,15 +49,15 @@ const Form = () => {
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-            Username
+            Email
           </label>
           <input
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="username"
             type="email"
-            placeholder="Enter the Username"
-            required
+            placeholder="Enter the Email"
             value={username}
+            required
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>
@@ -42,8 +71,8 @@ const Form = () => {
               id="password"
               type={showPassword ? 'text' : 'password'}
               placeholder="Enter the Password"
-              required
               value={password}
+              required
               onChange={(e) => setPassword(e.target.value)}
             />
             <button
