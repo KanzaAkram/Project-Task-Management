@@ -2,11 +2,9 @@ import AppLayout from "./components/AppLayout";
 import { Routes, Route } from "react-router-dom";
 import Task from "./components/Task";
 import { Toaster } from "react-hot-toast";
-import { AuthThemes } from "./ThemeContext/ThemeContext";
-import { useContext } from "react";
+
 function App() {
   console.log('render app..')
-  const { themes } = useContext(AuthThemes);
 
   return (
     <>
