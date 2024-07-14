@@ -10,7 +10,7 @@ const AppLayout = ({ children }) => {
     <>
     <Navbar />
     <div
-      className={`pt-10 max-w-[100vw] ${
+      className={`pt-10 max-w-[100vw] min-h-[100vh] ${
         themes === "dark"
           ? "bg-gray-800 text-gray-100"
           : "bg-slate-200 text-gray-600"
