@@ -225,6 +225,55 @@ api.put('/project/:id/todo', async (req, res) => {
     res.send(todo)
 })
 
+api.post('/signup', async (req, res) => {
+    const schema = joi.object({
+        email: joi.string().email().required(),
+        password: joi.string().min(6).required(),
+    });
+
+    try {
+        const { error, value } = schema.validate(req.body);
+        if (error) {
+            return res.status(400).json({ error: error.details[0].message });
+        }
+
+        const existingUser = await User.findOne({ email: value.email });
+        if (existingUser) {
+            return res.status(409).json({ error: 'Email already exists' });
+        }
+
+        const newUser = new User(value);
+        await newUser.save();
+        res.status(201).json({ message: 'User created successfully' });
+    } catch (error) {
+        console.error('Error creating user:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+})
+
+api.post('/submit-form', async (req, res) => {
+    const schema = joi.object({
+        formData: joi.string().required(),
+        // Add more fields as per your form requirements
+    });
+
+    try {
+        const { error, value } = schema.validate(req.body);
+        if (error) {
+            return res.status(400).json({ error: error.details[0].message });
+        }
+
+        // Save form data or process it as needed
+        // Example:
+        // await someFormModel.create(value);
+
+        res.status(200).json({ message: 'Form submitted successfully' });
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+})
+
 // api.use('/project/:id/task', async (req, res, next) => {
 //     if (req.method !== "GET") return next()
 

@@ -1,14 +1,15 @@
-import mongoose from "mongoose";
-import Project from './Project.js';
-import User from './User.js';
+import mongoose from 'mongoose';
 
-// Define Project schema
 const projectSchema = new mongoose.Schema({
     title: {
         type: String,
-        unique: true, // `title` must be unique
+        unique: true, // Ensures title is unique
+        required: true // Requires title field
     },
-    description: String,
+    description: {
+        type: String,
+        required: true // Requires description field
+    },
     task: [
         {
             id: Number,
@@ -26,11 +27,6 @@ const projectSchema = new mongoose.Schema({
     ]
 }, { timestamps: true });
 
-// Create Project model
-const ProjectModel = mongoose.model('Project', projectSchema);
+const Project = mongoose.model('Project', projectSchema);
 
-// Export Project model as default
-export default ProjectModel;
-
-// Export Project and User explicitly
-export { ProjectModel as Project, User };
+export default Project;
